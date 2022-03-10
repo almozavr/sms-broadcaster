@@ -29,7 +29,11 @@ class MainActivity : ComponentActivity() {
                         onFetchClick = viewModel::onFetchClick,
                         fetchInProgress = state.fetchInProgress,
                         smsText = state.smsBody,
-                        smsPhones = state.smsNumbers,
+                        smsPhones = state.phoneNumbers.size,
+                        onSendClick = viewModel::onSendClick,
+                        onCancelClick = viewModel::onCancelClick,
+                        sendInProgress = state.sendInProgress,
+                        sendProgress = 0,
                     )
                 }
             }

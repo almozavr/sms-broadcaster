@@ -7,7 +7,9 @@ import kotlinx.parcelize.Parcelize
 data class MainState(
     val fetchInProgress: Boolean,
     val smsBody: String,
-    val smsNumbers: Int,
+    val phoneNumbers: List<String>,
+    val sendInProgress: Boolean,
+    val sendNumbers: Int,
 ) : Parcelable
 
 sealed class MainEffect

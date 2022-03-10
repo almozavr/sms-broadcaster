@@ -19,12 +19,18 @@ class MainViewModel(
 ) : ViewModel(),
     ContainerHost<MainState, MainEffect> {
 
-    override val container: Container<MainState, MainEffect> = container(
-        initialState = MainState(
+    companion object {
+        private val initialState = MainState(
             fetchInProgress = false,
             smsBody = "",
-            smsNumbers = 0,
-        ),
+            phoneNumbers = emptyList(),
+            sendInProgress = false,
+            sendNumbers = 0,
+        )
+    }
+
+    override val container: Container<MainState, MainEffect> = container(
+        initialState = initialState,
         savedStateHandle = savedStateHandle,
         settings = Container.Settings(exceptionHandler = exceptionHandler.asCoroutineExceptionHandler())
     ) {
@@ -32,10 +38,22 @@ class MainViewModel(
     }
 
     fun onFetchClick(token: String) = intent {
-        reduce { state.copy(fetchInProgress = true) }
+        reduce { initialState.copy(fetchInProgress = true) }
         executeWithHandler { fetcherRepository.fetchBroadcast(token) }
-            .onSuccess { reduce { state.copy(smsBody = "Hello Motherfucker", smsNumbers = 101) } }
+            .onSuccess {
+                reduce {
+                    state.copy(smsBody = it.smsBody, phoneNumbers = it.phones)
+                }
+            }
         reduce { state.copy(fetchInProgress = false) }
+    }
+
+    fun onSendClick(count: Int) = intent {
+
+    }
+
+    fun onCancelClick() = intent {
+
     }
 
 }

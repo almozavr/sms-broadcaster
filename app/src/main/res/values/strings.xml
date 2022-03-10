@@ -3,7 +3,12 @@
 
     <string name="token_input_label">API токен</string>
     <string name="token_input_error">Введіть ваш токен</string>
-    <string name="token_button_label">Скачати розсилку</string>
+    <string name="token_button_label">Скачати розсилку 🔽</string>
+    <string name="token_button_again_label">Скачати розсилку наново 🔽</string>
     <string name="broadcast_sms_label">Розсилка</string>
     <string name="broadcast_phones_available">Телефонів: %d</string>
+    <string name="send_slider_value">Кількість відправок: %d</string>
+    <string name="send_status_label">Відправлено: %d</string>
+    <string name="send_button_label">Розпочати відправку 🚀</string>
+    <string name="cancel_button_label">Стоп 🛑</string>
 </resources>
