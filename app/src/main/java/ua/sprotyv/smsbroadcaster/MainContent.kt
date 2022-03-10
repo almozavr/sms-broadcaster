@@ -42,12 +42,12 @@ import ua.sprotyv.smsbroadcaster.shared.ui.theme.SmsBroadcasterTheme
 @Composable
 fun MainContent(
     onFetchClick: (token: String) -> Unit,
-    fetchInProgress: Boolean,
+    fetchStatus: MainState.Status,
     smsText: String,
     smsPhones: Int,
     onSendClick: (count: Int) -> Unit,
     onCancelClick: () -> Unit,
-    sendInProgress: Boolean,
+    sendStatus: MainState.Status,
     sendProgress: Int,
 ) {
     Column(
@@ -56,19 +56,23 @@ fun MainContent(
             .padding(horizontal = 16.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TokenComponent(onFetchClick, fetchInProgress, smsPhones > 0)
+        TokenComponent(onFetchClick, fetchStatus, sendStatus)
         Spacer(Modifier.height(24.dp))
         if (smsText.isNotEmpty() && smsPhones > 0) {
             BroadcastInfo(smsText)
             Spacer(Modifier.height(24.dp))
-            SendComponent(sendInProgress, sendProgress, smsPhones, onSendClick, onCancelClick)
+            SendComponent(sendStatus, sendProgress, smsPhones, onSendClick, onCancelClick)
         }
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun TokenComponent(onFetchClick: (token: String) -> Unit, fetchInProgress: Boolean, redownload: Boolean) {
+private fun TokenComponent(
+    onFetchClick: (token: String) -> Unit,
+    fetchStatus: MainState.Status,
+    sendStatus: MainState.Status,
+) {
     var token by rememberSaveable { mutableStateOf("") }
     var tokenError by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
@@ -79,7 +83,7 @@ private fun TokenComponent(onFetchClick: (token: String) -> Unit, fetchInProgres
         onValueChange = { token = it; tokenError = false },
         label = { Text(stringResource(R.string.token_input_label)) },
         maxLines = 2,
-        readOnly = fetchInProgress,
+        readOnly = fetchStatus == MainState.Status.PROGRESS,
         isError = tokenError,
 
         )
@@ -88,11 +92,11 @@ private fun TokenComponent(onFetchClick: (token: String) -> Unit, fetchInProgres
             Text(stringResource(R.string.token_input_error))
         }
     Spacer(modifier = Modifier.height(16.dp))
-    Crossfade(targetState = fetchInProgress) {
+    Crossfade(targetState = fetchStatus) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             when (it) {
-                true -> CircularProgressIndicator()
-                false -> Button(
+                MainState.Status.PROGRESS -> CircularProgressIndicator()
+                else -> Button(
                     onClick = {
                         if (token.isEmpty()) tokenError = true
                         else {
@@ -105,10 +109,13 @@ private fun TokenComponent(onFetchClick: (token: String) -> Unit, fetchInProgres
                     content = {
                         Text(
                             stringResource(
-                                id = if (redownload) R.string.token_button_again_label else R.string.token_button_label
+                                id =
+                                if (it == MainState.Status.COMPLETE) R.string.token_button_again_label
+                                else R.string.token_button_label
                             )
                         )
-                    }
+                    },
+                    enabled = sendStatus != MainState.Status.PROGRESS,
                 )
             }
         }
@@ -135,17 +142,17 @@ private fun BroadcastInfo(smsText: String) {
 
 @Composable
 private fun SendComponent(
-    sendInProgress: Boolean,
+    sendStatus: MainState.Status,
     sendProgress: Int,
     sendOverall: Int,
     onSendClick: (count: Int) -> Unit,
     onCancelClick: () -> Unit
 ) {
-    Crossfade(targetState = sendInProgress) {
+    Crossfade(targetState = sendStatus) {
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             var sliderPosition by rememberSaveable { mutableStateOf(sendOverall.toFloat()) }
             when (it) {
-                false -> {
+                MainState.Status.IDLE -> {
                     Slider(
                         value = sliderPosition,
                         valueRange = 1f..sendOverall.toFloat(),
@@ -158,7 +165,7 @@ private fun SendComponent(
                         Text(text = stringResource(id = R.string.send_button_label))
                     }
                 }
-                true -> {
+                MainState.Status.PROGRESS, MainState.Status.COMPLETE -> {
                     val animatedProgress = animateFloatAsState(
                         targetValue = sendProgress.toFloat() / sendOverall,
                         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
@@ -167,10 +174,8 @@ private fun SendComponent(
                     Spacer(Modifier.height(4.dp))
                     Text(stringResource(R.string.send_status_label, sendProgress))
                     Spacer(Modifier.height(8.dp))
-                    if (sendProgress < sliderPosition) {
-                        Button(onClick = onCancelClick) {
-                            Text(text = stringResource(R.string.cancel_button_label))
-                        }
+                    if (it != MainState.Status.COMPLETE) Button(onClick = onCancelClick) {
+                        Text(text = stringResource(R.string.cancel_button_label))
                     }
                 }
             }
@@ -184,12 +189,12 @@ private fun FetchProgressPreview() {
     SmsBroadcasterTheme {
         MainContent(
             onFetchClick = {},
-            fetchInProgress = true,
+            fetchStatus = MainState.Status.PROGRESS,
             smsText = "",
             smsPhones = 0,
             onSendClick = {},
             onCancelClick = {},
-            sendInProgress = false,
+            sendStatus = MainState.Status.IDLE,
             sendProgress = 0,
         )
     }
@@ -201,12 +206,12 @@ private fun ReadyToSendPreview() {
     SmsBroadcasterTheme {
         MainContent(
             onFetchClick = {},
-            fetchInProgress = false,
+            fetchStatus = MainState.Status.COMPLETE,
             smsText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
             smsPhones = 101,
             onSendClick = {},
             onCancelClick = {},
-            sendInProgress = false,
+            sendStatus = MainState.Status.IDLE,
             sendProgress = 0,
         )
     }
@@ -218,12 +223,12 @@ private fun SendProgressPreview() {
     SmsBroadcasterTheme {
         MainContent(
             onFetchClick = {},
-            fetchInProgress = false,
+            fetchStatus = MainState.Status.COMPLETE,
             smsText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
             smsPhones = 101,
             onSendClick = {},
             onCancelClick = {},
-            sendInProgress = true,
+            sendStatus = MainState.Status.PROGRESS,
             sendProgress = 33,
         )
     }

@@ -5,11 +5,15 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MainState(
-    val fetchInProgress: Boolean,
+    val fetchStatus: Status,
     val smsBody: String,
     val phoneNumbers: List<String>,
-    val sendInProgress: Boolean,
+    val sendStatus: Status,
     val sendNumbers: Int,
-) : Parcelable
+) : Parcelable {
+    enum class Status {
+        IDLE, PROGRESS, COMPLETE
+    }
+}
 
 sealed class MainEffect

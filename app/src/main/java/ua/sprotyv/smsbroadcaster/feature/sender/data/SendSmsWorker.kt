@@ -30,6 +30,7 @@ class SendSmsWorker(private val context: Context, parameters: WorkerParameters) 
         val sms = inputData.getString(ARG_SMS) ?: return Result.failure()
         val phones = inputData.getStringArray(ARG_PHONES) ?: return Result.failure()
         phones.forEachIndexed { i, phone ->
+            if (isStopped) return@forEachIndexed
             smsManager.sendTextMessage(phone, null, sms, null, null)
             setProgress(workDataOf(ARG_PROGRESS to i))
         }

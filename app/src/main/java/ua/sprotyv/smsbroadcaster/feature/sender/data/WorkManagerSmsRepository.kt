@@ -10,6 +10,7 @@ import androidx.work.workDataOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.takeWhile
 import ua.sprotyv.smsbroadcaster.feature.sender.domain.SendResult
 import ua.sprotyv.smsbroadcaster.feature.sender.domain.SmsRepository
 
@@ -29,15 +30,20 @@ class WorkManagerSmsRepository(private val workManager: WorkManager) : SmsReposi
                 )
             )
             .build()
-        return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME)
-            .asFlow().map {
-                val job = it.first()
-                if (job.state == WorkInfo.State.FAILED) throw IllegalStateException("Work failed")
+        return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME).asFlow()
+            .takeWhile {
+                val work = it.first()
+                if (work.state == WorkInfo.State.FAILED) throw IllegalStateException("Work failed")
+                work.state !in listOf(WorkInfo.State.SUCCEEDED, WorkInfo.State.CANCELLED)
+            }
+            .map {
+                val work = it.first()
                 val progress =
-                    if (job.state != WorkInfo.State.SUCCEEDED) job.progress.getInt(SendSmsWorker.ARG_PROGRESS, 0)
-                    else job.outputData.getInt(SendSmsWorker.ARG_PROGRESS, 0)
+                    if (work.state != WorkInfo.State.SUCCEEDED) work.progress.getInt(SendSmsWorker.ARG_PROGRESS, 0)
+                    else work.outputData.getInt(SendSmsWorker.ARG_PROGRESS, 0)
                 SendResult(sent = progress)
-            }.onStart {
+            }
+            .onStart {
                 workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, request)
             }
     }
@@ -46,3 +52,5 @@ class WorkManagerSmsRepository(private val workManager: WorkManager) : SmsReposi
         workManager.cancelUniqueWork(WORK_NAME)
     }
 }
+
+class GracefulCompletionException : RuntimeException("Completed gracefully")

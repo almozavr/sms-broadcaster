@@ -25,10 +25,10 @@ class MainViewModel(
 
     companion object {
         private val initialState = MainState(
-            fetchInProgress = false,
+            fetchStatus = MainState.Status.IDLE,
             smsBody = "",
             phoneNumbers = emptyList(),
-            sendInProgress = false,
+            sendStatus = MainState.Status.IDLE,
             sendNumbers = 0,
         )
     }
@@ -42,28 +42,36 @@ class MainViewModel(
     }
 
     fun onFetchClick(token: String) = intent {
-        reduce { initialState.copy(fetchInProgress = true) }
+        reduce { initialState.copy(fetchStatus = MainState.Status.PROGRESS) }
         executeWithHandler { fetcherRepository.fetchBroadcast(token) }
             .onSuccess {
                 reduce {
-                    state.copy(smsBody = it.smsBody, phoneNumbers = it.phones)
+                    state.copy(
+                        fetchStatus = MainState.Status.COMPLETE,
+                        smsBody = it.smsBody,
+                        phoneNumbers = it.phones
+                    )
                 }
             }
-        reduce { state.copy(fetchInProgress = false) }
+            .onFailure {
+                reduce { state.copy(fetchStatus = MainState.Status.IDLE) }
+            }
     }
 
     fun onSendClick(count: Int) = intent {
         val permissionGranted = permissionService.checkSendSms()
         if (permissionGranted.not()) return@intent
 
-        reduce { state.copy(sendInProgress = true) }
+        reduce { state.copy(sendStatus = MainState.Status.PROGRESS) }
         smsRepository.send(state.smsBody, phones = state.phoneNumbers.subList(0, count)).collect {
             reduce { state.copy(sendNumbers = it.sent) }
         }
+        reduce { state.copy(sendStatus = MainState.Status.COMPLETE) }
     }
 
     fun onCancelClick() = intent {
         smsRepository.cancel()
+        reduce { state.copy(sendStatus = MainState.Status.COMPLETE) }
     }
 
 }
