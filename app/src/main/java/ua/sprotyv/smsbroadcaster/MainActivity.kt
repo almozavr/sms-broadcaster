@@ -6,14 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ua.sprotyv.smsbroadcaster.shared.viewmodel.composableState
 import ua.sprotyv.smsbroadcaster.shared.ui.theme.SmsBroadcasterTheme
+import ua.sprotyv.smsbroadcaster.shared.viewmodel.composableState
 
 class MainActivity : ComponentActivity() {
 
@@ -28,22 +25,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting(state.name)
+                    MainContent(
+                        onFetchClick = viewModel::onFetchClick,
+                        fetchInProgress = state.fetchInProgress,
+                        smsText = state.smsBody,
+                        smsPhones = state.smsNumbers,
+                    )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    SmsBroadcasterTheme {
-        Greeting("Android")
     }
 }

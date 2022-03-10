@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Sprotyv Sms Broadcaster</string>
+
+    <string name="token_input_label">API токен</string>
+    <string name="token_input_error">Введіть ваш токен</string>
+    <string name="token_button_label">Скачати розсилку</string>
+    <string name="broadcast_sms_label">Розсилка</string>
+    <string name="broadcast_phones_available">Телефонів: %d</string>
 </resources>
