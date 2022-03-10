@@ -9,6 +9,7 @@ import org.koin.core.KoinApplication
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
 import ua.sprotyv.smsbroadcaster.di.exceptionsModule
+import ua.sprotyv.smsbroadcaster.di.fetcherModule
 import ua.sprotyv.smsbroadcaster.di.mainModule
 import ua.sprotyv.smsbroadcaster.di.netModule
 
@@ -30,6 +31,7 @@ class App : Application() {
                 // endregion
                 // region io
                 netModule,
+                fetcherModule,
                 // endregion
                 // region shared
                 exceptionsModule,
