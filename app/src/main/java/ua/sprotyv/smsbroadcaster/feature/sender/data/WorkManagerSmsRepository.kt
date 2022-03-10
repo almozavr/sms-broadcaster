@@ -1,18 +1,20 @@
 package ua.sprotyv.smsbroadcaster.feature.sender.data
 
 import androidx.lifecycle.asFlow
+import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.await
 import androidx.work.workDataOf
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.takeWhile
-import ua.sprotyv.smsbroadcaster.feature.sender.domain.SendResult
 import ua.sprotyv.smsbroadcaster.feature.sender.domain.SmsRepository
+import ua.sprotyv.smsbroadcaster.feature.sender.domain.entity.SmsSendStatus
+import ua.sprotyv.smsbroadcaster.shared.entity.Status
 
 class WorkManagerSmsRepository(private val workManager: WorkManager) : SmsRepository {
 
@@ -20,7 +22,24 @@ class WorkManagerSmsRepository(private val workManager: WorkManager) : SmsReposi
         private const val WORK_NAME = "immediate_sms_work"
     }
 
-    override fun send(body: String, phones: List<String>): Flow<SendResult> {
+    override fun connect(): Flow<SmsSendStatus> =
+        workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME).asFlow()
+            .filter {
+                val work = it.first()
+                work.state != WorkInfo.State.ENQUEUED && work.state != WorkInfo.State.BLOCKED
+            }
+            .map {
+                if (it.isEmpty()) return@map SmsSendStatus("", emptyList(), 0, Status.IDLE)
+                val work = it.first()
+                when {
+                    work.state == WorkInfo.State.CANCELLED -> work.progress.asSendResult(Status.COMPLETE)
+                    work.state != WorkInfo.State.SUCCEEDED -> work.progress.asSendResult(Status.PROGRESS)
+                    else -> work.outputData.asSendResult(Status.COMPLETE)
+                }
+            }
+
+
+    override suspend fun send(body: String, phones: List<String>) {
         val request = OneTimeWorkRequestBuilder<SendSmsWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .setInputData(
@@ -30,27 +49,17 @@ class WorkManagerSmsRepository(private val workManager: WorkManager) : SmsReposi
                 )
             )
             .build()
-        return workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME).asFlow()
-            .takeWhile {
-                val work = it.first()
-                if (work.state == WorkInfo.State.FAILED) throw IllegalStateException("Work failed")
-                work.state !in listOf(WorkInfo.State.SUCCEEDED, WorkInfo.State.CANCELLED)
-            }
-            .map {
-                val work = it.first()
-                val progress =
-                    if (work.state != WorkInfo.State.SUCCEEDED) work.progress.getInt(SendSmsWorker.ARG_PROGRESS, 0)
-                    else work.outputData.getInt(SendSmsWorker.ARG_PROGRESS, 0)
-                SendResult(sent = progress)
-            }
-            .onStart {
-                workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, request)
-            }
+        workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, request).await()
     }
 
-    override fun cancel() {
+    override suspend fun cancel() {
         workManager.cancelUniqueWork(WORK_NAME)
     }
 }
 
-class GracefulCompletionException : RuntimeException("Completed gracefully")
+private fun Data.asSendResult(status: Status) = SmsSendStatus(
+    sent = getInt(SendSmsWorker.ARG_PROGRESS, 0),
+    phones = getStringArray(SendSmsWorker.ARG_PHONES)?.toList() ?: emptyList(),
+    body = getString(SendSmsWorker.ARG_SMS) ?: "",
+    status = status,
+)

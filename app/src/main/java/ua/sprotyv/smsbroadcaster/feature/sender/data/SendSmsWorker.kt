@@ -1,7 +1,9 @@
 package ua.sprotyv.smsbroadcaster.feature.sender.data
 
 import android.app.Notification
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.telephony.SmsManager
 import androidx.core.app.NotificationChannelCompat
@@ -11,9 +13,10 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import ua.sprotyv.smsbroadcaster.MainActivity
 import ua.sprotyv.smsbroadcaster.R
 
-class SendSmsWorker(private val context: Context, parameters: WorkerParameters) : CoroutineWorker(context, parameters) {
+class SendSmsWorker(context: Context, parameters: WorkerParameters) : CoroutineWorker(context, parameters) {
 
     companion object {
         const val ARG_SMS = "sms"
@@ -32,9 +35,21 @@ class SendSmsWorker(private val context: Context, parameters: WorkerParameters) 
         phones.forEachIndexed { i, phone ->
             if (isStopped) return@forEachIndexed
             smsManager.sendTextMessage(phone, null, sms, null, null)
-            setProgress(workDataOf(ARG_PROGRESS to i))
+            setProgress(
+                workDataOf(
+                    ARG_SMS to sms,
+                    ARG_PROGRESS to i,
+                    ARG_PHONES to phones
+                )
+            )
         }
-        return Result.success(workDataOf(ARG_PROGRESS to phones.size))
+        return Result.success(
+            workDataOf(
+                ARG_SMS to sms,
+                ARG_PROGRESS to phones.size,
+                ARG_PHONES to phones
+            )
+        )
     }
 
     private fun createForegroundInfo() =
@@ -47,10 +62,21 @@ class SendSmsWorker(private val context: Context, parameters: WorkerParameters) 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) createChannel()
 
+        val intent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val pendingIntent: PendingIntent? = PendingIntent.getActivity(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         return NotificationCompat.Builder(applicationContext, id)
+            .setContentIntent(pendingIntent)
             .setContentTitle(title)
-            .setTicker(title)
             .setContentText(text)
+            .setTicker(text)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
             .build()
@@ -58,8 +84,8 @@ class SendSmsWorker(private val context: Context, parameters: WorkerParameters) 
 
     private fun createChannel() {
         val channel = NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL, NotificationManagerCompat.IMPORTANCE_HIGH)
-            .setName(context.getString(R.string.send_notification_channel))
+            .setName(applicationContext.getString(R.string.send_notification_channel))
             .build()
-        NotificationManagerCompat.from(context).createNotificationChannel(channel)
+        NotificationManagerCompat.from(applicationContext).createNotificationChannel(channel)
     }
 }

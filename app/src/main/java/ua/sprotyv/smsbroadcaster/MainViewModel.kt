@@ -10,6 +10,7 @@ import org.orbitmvi.orbit.viewmodel.container
 import ua.sprotyv.smsbroadcaster.feature.fetcher.domain.FetcherRepository
 import ua.sprotyv.smsbroadcaster.feature.permission.domain.PermissionService
 import ua.sprotyv.smsbroadcaster.feature.sender.domain.SmsRepository
+import ua.sprotyv.smsbroadcaster.shared.entity.Status
 import ua.sprotyv.smsbroadcaster.shared.exception.domain.ExceptionHandler
 import ua.sprotyv.smsbroadcaster.shared.exception.domain.asCoroutineExceptionHandler
 import ua.sprotyv.smsbroadcaster.shared.viewmodel.executeWithHandler
@@ -25,10 +26,10 @@ class MainViewModel(
 
     companion object {
         private val initialState = MainState(
-            fetchStatus = MainState.Status.IDLE,
+            fetchStatus = Status.IDLE,
             smsBody = "",
             phoneNumbers = emptyList(),
-            sendStatus = MainState.Status.IDLE,
+            sendStatus = Status.IDLE,
             sendNumbers = 0,
         )
     }
@@ -38,23 +39,31 @@ class MainViewModel(
         savedStateHandle = savedStateHandle,
         settings = Container.Settings(exceptionHandler = exceptionHandler.asCoroutineExceptionHandler())
     ) {
-        /* initialize */
+        observeSmsSender()
+    }
+
+    private fun observeSmsSender() = intent {
+        smsRepository.connect().collect {
+            reduce {
+                state.copy(sendNumbers = it.sent, phoneNumbers = it.phones, smsBody = it.body, sendStatus = it.status)
+            }
+        }
     }
 
     fun onFetchClick(token: String) = intent {
-        reduce { initialState.copy(fetchStatus = MainState.Status.PROGRESS) }
+        reduce { initialState.copy(fetchStatus = Status.PROGRESS) }
         executeWithHandler { fetcherRepository.fetchBroadcast(token) }
             .onSuccess {
                 reduce {
                     state.copy(
-                        fetchStatus = MainState.Status.COMPLETE,
+                        fetchStatus = Status.COMPLETE,
                         smsBody = it.smsBody,
                         phoneNumbers = it.phones
                     )
                 }
             }
             .onFailure {
-                reduce { state.copy(fetchStatus = MainState.Status.IDLE) }
+                reduce { state.copy(fetchStatus = Status.IDLE) }
             }
     }
 
@@ -62,16 +71,14 @@ class MainViewModel(
         val permissionGranted = permissionService.checkSendSms()
         if (permissionGranted.not()) return@intent
 
-        reduce { state.copy(sendStatus = MainState.Status.PROGRESS) }
-        smsRepository.send(state.smsBody, phones = state.phoneNumbers.subList(0, count)).collect {
-            reduce { state.copy(sendNumbers = it.sent) }
-        }
-        reduce { state.copy(sendStatus = MainState.Status.COMPLETE) }
+        reduce { state.copy(sendStatus = Status.PROGRESS) }
+        smsRepository.send(state.smsBody, phones = state.phoneNumbers.subList(0, count))
+        reduce { state.copy(sendStatus = Status.COMPLETE) }
     }
 
     fun onCancelClick() = intent {
         smsRepository.cancel()
-        reduce { state.copy(sendStatus = MainState.Status.COMPLETE) }
+        reduce { state.copy(sendStatus = Status.COMPLETE) }
     }
 
 }

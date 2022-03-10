@@ -37,17 +37,18 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ua.sprotyv.smsbroadcaster.shared.entity.Status
 import ua.sprotyv.smsbroadcaster.shared.ui.theme.SmsBroadcasterTheme
 
 @Composable
 fun MainContent(
     onFetchClick: (token: String) -> Unit,
-    fetchStatus: MainState.Status,
+    fetchStatus: Status,
     smsText: String,
     smsPhones: Int,
     onSendClick: (count: Int) -> Unit,
     onCancelClick: () -> Unit,
-    sendStatus: MainState.Status,
+    sendStatus: Status,
     sendProgress: Int,
 ) {
     Column(
@@ -70,10 +71,10 @@ fun MainContent(
 @Composable
 private fun TokenComponent(
     onFetchClick: (token: String) -> Unit,
-    fetchStatus: MainState.Status,
-    sendStatus: MainState.Status,
+    fetchStatus: Status,
+    sendStatus: Status,
 ) {
-    var token by rememberSaveable { mutableStateOf("") }
+    var token by rememberSaveable { mutableStateOf("123") }
     var tokenError by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -83,7 +84,7 @@ private fun TokenComponent(
         onValueChange = { token = it; tokenError = false },
         label = { Text(stringResource(R.string.token_input_label)) },
         maxLines = 2,
-        readOnly = fetchStatus == MainState.Status.PROGRESS,
+        readOnly = fetchStatus == Status.PROGRESS || sendStatus == Status.PROGRESS,
         isError = tokenError,
 
         )
@@ -95,7 +96,7 @@ private fun TokenComponent(
     Crossfade(targetState = fetchStatus) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             when (it) {
-                MainState.Status.PROGRESS -> CircularProgressIndicator()
+                Status.PROGRESS -> CircularProgressIndicator()
                 else -> Button(
                     onClick = {
                         if (token.isEmpty()) tokenError = true
@@ -110,12 +111,12 @@ private fun TokenComponent(
                         Text(
                             stringResource(
                                 id =
-                                if (it == MainState.Status.COMPLETE) R.string.token_button_again_label
+                                if (it == Status.COMPLETE) R.string.token_button_again_label
                                 else R.string.token_button_label
                             )
                         )
                     },
-                    enabled = sendStatus != MainState.Status.PROGRESS,
+                    enabled = sendStatus != Status.PROGRESS,
                 )
             }
         }
@@ -142,7 +143,7 @@ private fun BroadcastInfo(smsText: String) {
 
 @Composable
 private fun SendComponent(
-    sendStatus: MainState.Status,
+    sendStatus: Status,
     sendProgress: Int,
     sendOverall: Int,
     onSendClick: (count: Int) -> Unit,
@@ -152,7 +153,7 @@ private fun SendComponent(
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             var sliderPosition by rememberSaveable { mutableStateOf(sendOverall.toFloat()) }
             when (it) {
-                MainState.Status.IDLE -> {
+                Status.IDLE -> {
                     Slider(
                         value = sliderPosition,
                         valueRange = 1f..sendOverall.toFloat(),
@@ -165,7 +166,7 @@ private fun SendComponent(
                         Text(text = stringResource(id = R.string.send_button_label))
                     }
                 }
-                MainState.Status.PROGRESS, MainState.Status.COMPLETE -> {
+                Status.PROGRESS, Status.COMPLETE -> {
                     val animatedProgress = animateFloatAsState(
                         targetValue = sendProgress.toFloat() / sendOverall,
                         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
@@ -174,7 +175,7 @@ private fun SendComponent(
                     Spacer(Modifier.height(4.dp))
                     Text(stringResource(R.string.send_status_label, sendProgress))
                     Spacer(Modifier.height(8.dp))
-                    if (it != MainState.Status.COMPLETE) Button(onClick = onCancelClick) {
+                    if (it != Status.COMPLETE) Button(onClick = onCancelClick) {
                         Text(text = stringResource(R.string.cancel_button_label))
                     }
                 }
@@ -189,12 +190,12 @@ private fun FetchProgressPreview() {
     SmsBroadcasterTheme {
         MainContent(
             onFetchClick = {},
-            fetchStatus = MainState.Status.PROGRESS,
+            fetchStatus = Status.PROGRESS,
             smsText = "",
             smsPhones = 0,
             onSendClick = {},
             onCancelClick = {},
-            sendStatus = MainState.Status.IDLE,
+            sendStatus = Status.IDLE,
             sendProgress = 0,
         )
     }
@@ -206,12 +207,12 @@ private fun ReadyToSendPreview() {
     SmsBroadcasterTheme {
         MainContent(
             onFetchClick = {},
-            fetchStatus = MainState.Status.COMPLETE,
+            fetchStatus = Status.COMPLETE,
             smsText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
             smsPhones = 101,
             onSendClick = {},
             onCancelClick = {},
-            sendStatus = MainState.Status.IDLE,
+            sendStatus = Status.IDLE,
             sendProgress = 0,
         )
     }
@@ -223,12 +224,12 @@ private fun SendProgressPreview() {
     SmsBroadcasterTheme {
         MainContent(
             onFetchClick = {},
-            fetchStatus = MainState.Status.COMPLETE,
+            fetchStatus = Status.COMPLETE,
             smsText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
             smsPhones = 101,
             onSendClick = {},
             onCancelClick = {},
-            sendStatus = MainState.Status.PROGRESS,
+            sendStatus = Status.PROGRESS,
             sendProgress = 33,
         )
     }
