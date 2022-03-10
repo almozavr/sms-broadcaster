@@ -5,6 +5,7 @@ coroutines = "1.6.0"
 # androidx
 lifecycle = "2.4.1"
 navigation = "2.4.1"
+work_manager = "2.7.1"
 # di
 koin = "3.1.5"
 # presentation
@@ -43,6 +44,8 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-test-core = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
+# work manager
+androidx-work-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work_manager" }
 # presentation
 orbit-viewmodel = { module = "org.orbit-mvi:orbit-viewmodel", version.ref = "orbit" }
 orbit-test = { module = "org.orbit-mvi:orbit-test", version.ref = "orbit" }

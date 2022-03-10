@@ -8,6 +8,7 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import ua.sprotyv.smsbroadcaster.feature.fetcher.domain.FetcherRepository
+import ua.sprotyv.smsbroadcaster.feature.sender.domain.SmsRepository
 import ua.sprotyv.smsbroadcaster.shared.exception.domain.ExceptionHandler
 import ua.sprotyv.smsbroadcaster.shared.exception.domain.asCoroutineExceptionHandler
 import ua.sprotyv.smsbroadcaster.shared.viewmodel.executeWithHandler
@@ -16,6 +17,7 @@ class MainViewModel(
     savedStateHandle: SavedStateHandle,
     exceptionHandler: ExceptionHandler,
     private val fetcherRepository: FetcherRepository,
+    private val smsRepository: SmsRepository,
 ) : ViewModel(),
     ContainerHost<MainState, MainEffect> {
 
@@ -49,11 +51,14 @@ class MainViewModel(
     }
 
     fun onSendClick(count: Int) = intent {
-
+        reduce { state.copy(sendInProgress = true) }
+        smsRepository.send(state.smsBody, phones = state.phoneNumbers.subList(0, count)).collect {
+            reduce { state.copy(sendNumbers = it.sent) }
+        }
     }
 
     fun onCancelClick() = intent {
-
+        smsRepository.cancel()
     }
 
 }

@@ -61,6 +61,7 @@ dependencies {
     implementation libs.androidx.fragment
     implementation libs.bundles.androidx.lifecycle
     implementation libs.bundles.androidx.compose
+    implementation libs.androidx.work.ktx
     // endregion
 
     // region Kotlin

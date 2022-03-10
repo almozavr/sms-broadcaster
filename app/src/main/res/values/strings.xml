@@ -11,4 +11,8 @@
     <string name="send_status_label">Відправлено: %d</string>
     <string name="send_button_label">Розпочати відправку 🚀</string>
     <string name="cancel_button_label">Стоп 🛑</string>
+    <string name="send_notification_channel">Загальні</string>
+    <string name="send_notification_title">@string/app_name</string>
+    <string name="send_notification_text">Відправка смс в процесі</string>
+    <string name="send_notification_cancel">@string/cancel_button_label</string>
 </resources>

@@ -12,6 +12,7 @@ import ua.sprotyv.smsbroadcaster.di.exceptionsModule
 import ua.sprotyv.smsbroadcaster.di.fetcherModule
 import ua.sprotyv.smsbroadcaster.di.mainModule
 import ua.sprotyv.smsbroadcaster.di.netModule
+import ua.sprotyv.smsbroadcaster.di.senderModule
 
 @ExperimentalCoroutinesApi
 class App : Application() {
@@ -37,6 +38,7 @@ class App : Application() {
                 // region io
                 netModule,
                 fetcherModule,
+                senderModule,
                 // endregion
                 // region shared
                 exceptionsModule,

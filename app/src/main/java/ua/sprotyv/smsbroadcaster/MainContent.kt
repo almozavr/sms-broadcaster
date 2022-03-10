@@ -143,13 +143,13 @@ private fun SendComponent(
 ) {
     Crossfade(targetState = sendInProgress) {
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            var sliderPosition by rememberSaveable { mutableStateOf(sendOverall.toFloat()) }
             when (it) {
                 false -> {
-                    var sliderPosition by rememberSaveable { mutableStateOf(sendOverall.toFloat()) }
                     Slider(
                         value = sliderPosition,
                         valueRange = 1f..sendOverall.toFloat(),
-                        steps = 1,
+                        steps = sendOverall,
                         onValueChange = { sliderPosition = it },
                     )
                     Text(stringResource(R.string.send_slider_value, sliderPosition.toInt()))
@@ -167,8 +167,10 @@ private fun SendComponent(
                     Spacer(Modifier.height(4.dp))
                     Text(stringResource(R.string.send_status_label, sendProgress))
                     Spacer(Modifier.height(8.dp))
-                    Button(onClick = onCancelClick) {
-                        Text(text = stringResource(R.string.cancel_button_label))
+                    if (sendProgress < sliderPosition) {
+                        Button(onClick = onCancelClick) {
+                            Text(text = stringResource(R.string.cancel_button_label))
+                        }
                     }
                 }
             }

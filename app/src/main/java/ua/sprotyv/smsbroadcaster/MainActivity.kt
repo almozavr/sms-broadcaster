@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                         onSendClick = viewModel::onSendClick,
                         onCancelClick = viewModel::onCancelClick,
                         sendInProgress = state.sendInProgress,
-                        sendProgress = 0,
+                        sendProgress = state.sendNumbers,
                     )
                 }
             }
