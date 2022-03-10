@@ -1,4 +1,4 @@
-package ua.sprotyv.smsbroadcaster;
+package ua.sprotyv.smsbroadcaster
 
 import android.app.Application
 import androidx.viewbinding.BuildConfig
@@ -8,6 +8,8 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.KoinApplication
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
+import ua.sprotyv.smsbroadcaster.di.exceptionsModule
+import ua.sprotyv.smsbroadcaster.di.mainModule
 
 @ExperimentalCoroutinesApi
 class App : Application() {
@@ -22,7 +24,12 @@ class App : Application() {
             androidContext(this@App)
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             modules(
-                /**/
+                // region shared
+                mainModule,
+                // endregion
+                // region shared
+                exceptionsModule,
+                // endregion
             )
         }
 }
