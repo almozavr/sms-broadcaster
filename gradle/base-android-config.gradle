@@ -1,0 +1,63 @@
+android {
+    compileSdkVersion androidSetup.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion androidSetup.minSdkVersion
+        targetSdkVersion androidSetup.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+        coreLibraryDesugaringEnabled true
+    }
+
+    kotlinOptions {
+        jvmTarget = '11'
+        freeCompilerArgs += [
+                '-Xopt-in=kotlin.RequiresOptIn',
+                '-Xopt-in=kotlin.ExperimentalStdlibApi',
+                '-Xopt-in=kotlin.contracts.ExperimentalContracts',
+                '-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi',
+                '-Xopt-in=kotlinx.coroutines.FlowPreview',
+        ]
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    lintOptions {
+        abortOnError true
+        ignoreWarnings false
+        disable 'WrongConstant',
+                'ContentDescription',
+                'VectorPath', 'VectorRaster',
+                'Typos', 'TypographyDashes', 'TypographyEllipsis', 'PluralsCandidate', 'ButtonCase'
+    }
+}
+
+tasks.withType(Test) {
+    testLogging {
+        events "failed", "standardError"
+    }
+}
+
+dependencies {
+    // region Tools
+    coreLibraryDesugaring libs.android.tools.desugar
+    // endregion
+}

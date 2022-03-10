@@ -1,0 +1,109 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+    id 'com.google.firebase.firebase-perf'
+}
+apply from: "${rootProject.projectDir}/gradle/base-android-config.gradle"
+apply from: "${rootProject.projectDir}/gradle/compose-android-config.gradle"
+
+
+android {
+    ext.majorVersion = project.property('app.version.major') as Integer
+    ext.minorVersion = project.property('app.version.minor') as Integer
+    ext.fixVersion = project.property('app.version.fix') as Integer
+
+    defaultConfig {
+        applicationId "ua.sprotyv.smsbroadcaster"
+
+        versionCode majorVersion * 1_000_000_000 + minorVersion * 1_000_000 + fixVersion
+        versionName "$majorVersion.$minorVersion.$fixVersion"
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".development"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            FirebasePerformance {
+                instrumentationEnabled false
+            }
+            manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [crashlyticsCollectionEnabled: "true"]
+        }
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    // region AndroidX
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.core
+    implementation libs.androidx.fragment
+    implementation libs.bundles.androidx.lifecycle
+    implementation libs.bundles.androidx.compose
+    // endregion
+
+    // region Kotlin
+    implementation libs.kotlin.coroutines.core
+    implementation libs.kotlin.coroutines.android
+    implementation libs.kotlin.reflect
+    // endregion
+
+    // region di
+    implementation libs.bundles.koin
+    // endregion
+
+    // region security
+    implementation libs.bundles.androidx.security
+    // endregion
+
+    // region presentation
+    implementation libs.orbit.viewmodel
+    testImplementation libs.orbit.test
+    // endregion
+
+    // region UI
+    implementation libs.google.material
+    implementation libs.androidx.splashscreen
+    // endregion
+
+    // region IO
+    implementation libs.retrofit.core
+    implementation libs.retrofit.converter.moshi
+    implementation libs.moshi.kotlin
+    implementation libs.moshi.adapters
+    // endregion
+
+    // region Services
+    implementation platform(libs.firebase.platform)
+    implementation libs.firebase.analytics
+    implementation libs.firebase.crashlytics
+    implementation libs.firebase.perf
+    // endregion
+
+    // region Tools
+    implementation libs.timber
+    debugImplementation libs.leakcanary
+    // endregion
+
+    // region Tests
+    testImplementation libs.bundles.tests.unit
+    testImplementation libs.bundles.tests.viewmodel
+    androidTestImplementation libs.bundles.tests.android
+    // endregion
+}

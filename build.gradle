@@ -1,0 +1,75 @@
+buildscript {
+
+    ext {}
+
+    ext.androidSetup = [
+            'compileSdkVersion': 31,
+            'minSdkVersion'    : 23,
+            'targetSdkVersion' : 31
+    ]
+
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.get()}"
+        classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.6.10-1.0.4"
+        classpath "org.jlleitschuh.gradle:ktlint-gradle:10.2.1"
+        classpath "gradle.plugin.org.ec4j.gradle:editorconfig-gradle-plugin:0.0.3"
+        classpath 'com.google.gms:google-services:4.3.10'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
+        classpath 'com.google.firebase:perf-plugin:1.4.1'
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+subprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    apply plugin: "org.ec4j.editorconfig"
+    editorconfig {
+        includes = ['src/**', 'build.gradle']
+        excludes = ['**/drawable/**/*.*']
+    }
+    apply plugin: "org.jlleitschuh.gradle.ktlint"
+    ktlint {
+        version = "0.43.2"
+        android = true
+        verbose = true
+        outputToConsole = true
+        outputColorName = "RED"
+        ignoreFailures = false
+        reporters {
+            reporter "checkstyle"
+        }
+    }
+}
+
+if (!project.hasProperty("disable-versions-plugin")) {
+    apply plugin: "com.github.ben-manes.versions"
+
+    def isNonStable = { String version ->
+        def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+        def regex = /^[0-9,.v-]+(-r)?$/
+        return !stableKeyword && !(version ==~ regex)
+    }
+
+    tasks.named("dependencyUpdates").configure {
+        rejectVersionIf {
+            isNonStable(it.candidate.version)
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
