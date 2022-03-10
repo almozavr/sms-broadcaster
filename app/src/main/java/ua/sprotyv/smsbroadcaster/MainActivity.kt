@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ua.sprotyv.smsbroadcaster.shared.viewmodel.composableState
-import ua.sprotyv.smsbroadcaster.ui.theme.SmsBroadcasterTheme
+import ua.sprotyv.smsbroadcaster.shared.ui.theme.SmsBroadcasterTheme
 
 class MainActivity : ComponentActivity() {
 

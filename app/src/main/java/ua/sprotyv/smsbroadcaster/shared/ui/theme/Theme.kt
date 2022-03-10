@@ -1,4 +1,4 @@
-package ua.sprotyv.smsbroadcaster.ui.theme
+package ua.sprotyv.smsbroadcaster.shared.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
