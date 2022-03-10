@@ -4,6 +4,8 @@
     package="ua.sprotyv.smsbroadcaster"
     >
 
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
     <application
         android:name=".App"
         android:allowBackup="true"

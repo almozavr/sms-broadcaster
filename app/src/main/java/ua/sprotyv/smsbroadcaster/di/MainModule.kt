@@ -10,7 +10,8 @@ val mainModule = module {
             savedStateHandle = get(),
             exceptionHandler = get(),
             fetcherRepository = get(),
-            smsRepository = get()
+            smsRepository = get(),
+            permissionService = get(),
         )
     }
 }

@@ -80,6 +80,7 @@ moshi-compiler = "dev.zacsweers.moshix:moshi-ksp:0.14.1"
 # security
 # Keep alpha01 till the issue is solved https://issuetracker.google.com/issues/164901843
 androidx-security-crypto = "androidx.security:security-crypto:1.1.0-alpha01"
+permissions-warder = "com.alexstyl:warden:1.0.0-alpha2"
 # alpha03 and security-credential requires minSdk = 24
 # androidx-security-credential = "androidx.security:security-identity-credential:1.0.0-alpha01"
 # services

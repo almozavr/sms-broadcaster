@@ -76,6 +76,7 @@ dependencies {
 
     // region security
     implementation libs.bundles.androidx.security
+    implementation libs.permissions.warder
     // endregion
 
     // region presentation
