@@ -10,6 +10,7 @@ import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
 import ua.sprotyv.smsbroadcaster.di.exceptionsModule
 import ua.sprotyv.smsbroadcaster.di.mainModule
+import ua.sprotyv.smsbroadcaster.di.netModule
 
 @ExperimentalCoroutinesApi
 class App : Application() {
@@ -24,8 +25,11 @@ class App : Application() {
             androidContext(this@App)
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             modules(
-                // region shared
+                // region main
                 mainModule,
+                // endregion
+                // region io
+                netModule,
                 // endregion
                 // region shared
                 exceptionsModule,

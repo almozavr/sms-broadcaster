@@ -25,6 +25,7 @@ android {
             useSupportLibrary true
         }
 
+        buildConfigField "String", "API_URL", "\"https://api.stub\""
         buildConfigField "boolean", "LOGGER_ENABLED", "true"
     }
 
@@ -87,6 +88,9 @@ dependencies {
     // endregion
 
     // region IO
+    implementation platform(libs.okhttp.platform)
+    implementation libs.okhttp.client
+    implementation libs.okhttp.logging
     implementation libs.retrofit.core
     implementation libs.retrofit.converter.moshi
     implementation libs.moshi.kotlin
