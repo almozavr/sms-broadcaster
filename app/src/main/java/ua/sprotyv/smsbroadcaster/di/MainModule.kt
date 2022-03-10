@@ -5,5 +5,5 @@ import org.koin.dsl.module
 import ua.sprotyv.smsbroadcaster.MainViewModel
 
 val mainModule = module {
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
 }

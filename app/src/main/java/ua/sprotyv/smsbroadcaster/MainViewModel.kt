@@ -2,18 +2,20 @@ package ua.sprotyv.smsbroadcaster
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
+import ua.sprotyv.smsbroadcaster.feature.fetcher.domain.FetcherRepository
 import ua.sprotyv.smsbroadcaster.shared.exception.domain.ExceptionHandler
 import ua.sprotyv.smsbroadcaster.shared.exception.domain.asCoroutineExceptionHandler
+import ua.sprotyv.smsbroadcaster.shared.viewmodel.executeWithHandler
 
 class MainViewModel(
-    private val savedStateHandle: SavedStateHandle,
-    private val exceptionHandler: ExceptionHandler
+    savedStateHandle: SavedStateHandle,
+    exceptionHandler: ExceptionHandler,
+    private val fetcherRepository: FetcherRepository,
 ) : ViewModel(),
     ContainerHost<MainState, MainEffect> {
 
@@ -31,9 +33,9 @@ class MainViewModel(
 
     fun onFetchClick(token: String) = intent {
         reduce { state.copy(fetchInProgress = true) }
-        delay(3000L)
+        executeWithHandler { fetcherRepository.fetchBroadcast(token) }
+            .onSuccess { reduce { state.copy(smsBody = "Hello Motherfucker", smsNumbers = 101) } }
         reduce { state.copy(fetchInProgress = false) }
-        reduce { state.copy(smsBody = "Hello Motherfucker", smsNumbers = 101) }
     }
 
 }
