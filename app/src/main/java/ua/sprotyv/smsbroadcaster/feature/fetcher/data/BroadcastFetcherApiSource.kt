@@ -9,5 +9,4 @@ class BroadcastFetcherApiSource(
 
     override suspend fun fetch(token: String): Broadcast =
         apiService.fetchBroadcast("Bearer: $token").asDomain()
-
 }

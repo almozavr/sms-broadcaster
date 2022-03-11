@@ -80,5 +80,4 @@ class MainViewModel(
         smsRepository.cancel()
         reduce { state.copy(sendStatus = Status.COMPLETE) }
     }
-
 }

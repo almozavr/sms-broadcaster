@@ -39,7 +39,6 @@ class WorkManagerSmsRepository(private val workManager: WorkManager) : SmsReposi
                 }
             }
 
-
     override suspend fun send(body: String, phones: List<String>) {
         val request = OneTimeWorkRequestBuilder<SendSmsWorker>()
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)

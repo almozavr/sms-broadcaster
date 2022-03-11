@@ -86,8 +86,7 @@ private fun TokenComponent(
         maxLines = 2,
         readOnly = fetchStatus == Status.PROGRESS || sendStatus == Status.PROGRESS,
         isError = tokenError,
-
-        )
+    )
     if (tokenError)
         CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.error) {
             Text(stringResource(R.string.token_input_error))
@@ -184,6 +183,7 @@ private fun SendComponent(
     }
 }
 
+/* ktlint-disable max-line-length */
 @Preview(showBackground = true)
 @Composable
 private fun FetchProgressPreview() {
@@ -234,3 +234,4 @@ private fun SendProgressPreview() {
         )
     }
 }
+/* ktlint-enable max-line-length */
