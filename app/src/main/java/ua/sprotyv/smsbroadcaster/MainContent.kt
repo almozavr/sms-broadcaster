@@ -74,7 +74,7 @@ private fun TokenComponent(
     fetchStatus: Status,
     sendStatus: Status,
 ) {
-    var token by rememberSaveable { mutableStateOf("123") }
+    var token by rememberSaveable { mutableStateOf("") }
     var tokenError by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
