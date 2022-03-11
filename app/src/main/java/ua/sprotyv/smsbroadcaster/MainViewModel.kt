@@ -42,14 +42,6 @@ class MainViewModel(
         observeSmsSender()
     }
 
-    private fun observeSmsSender() = intent {
-        smsRepository.connect().collect {
-            reduce {
-                state.copy(sendNumbers = it.sent, phoneNumbers = it.phones, smsBody = it.body, sendStatus = it.status)
-            }
-        }
-    }
-
     fun onFetchClick(token: String) = intent {
         reduce { initialState.copy(fetchStatus = Status.PROGRESS) }
         executeWithHandler { fetcherRepository.fetchBroadcast(token) }
@@ -65,6 +57,14 @@ class MainViewModel(
             .onFailure {
                 reduce { state.copy(fetchStatus = Status.IDLE) }
             }
+    }
+
+    private fun observeSmsSender() = intent {
+        smsRepository.observe().collect {
+            reduce {
+                state.copy(sendNumbers = it.sent, phoneNumbers = it.phones, smsBody = it.body, sendStatus = it.status)
+            }
+        }
     }
 
     fun onSendClick(count: Int) = intent {

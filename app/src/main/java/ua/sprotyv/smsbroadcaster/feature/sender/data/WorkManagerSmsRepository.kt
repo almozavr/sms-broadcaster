@@ -22,11 +22,12 @@ class WorkManagerSmsRepository(private val workManager: WorkManager) : SmsReposi
         private const val WORK_NAME = "immediate_sms_work"
     }
 
-    override fun connect(): Flow<SmsSendStatus> =
+    override fun observe(): Flow<SmsSendStatus> =
         workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME).asFlow()
             .filter {
                 val work = it.first()
-                work.state != WorkInfo.State.ENQUEUED && work.state != WorkInfo.State.BLOCKED
+                work.state != WorkInfo.State.ENQUEUED && work.state != WorkInfo.State.BLOCKED &&
+                    (work.progress.keyValueMap.isNotEmpty() || work.outputData.keyValueMap.isNotEmpty())
             }
             .map {
                 if (it.isEmpty()) return@map SmsSendStatus("", emptyList(), 0, Status.IDLE)
