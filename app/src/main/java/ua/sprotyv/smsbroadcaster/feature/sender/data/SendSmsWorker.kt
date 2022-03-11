@@ -30,7 +30,7 @@ class SendSmsWorker(context: Context, parameters: WorkerParameters) : CoroutineW
             setProgress(
                 workDataOf(
                     ARG_SMS to smsBody,
-                    ARG_PROGRESS to i,
+                    ARG_PROGRESS to i + 1,
                     ARG_PHONES to phones
                 )
             )
