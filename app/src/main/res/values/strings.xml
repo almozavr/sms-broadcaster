@@ -15,4 +15,7 @@
     <string name="send_notification_title">@string/app_name</string>
     <string name="send_notification_text">Відправка смс в процесі</string>
     <string name="send_notification_cancel">@string/cancel_button_label</string>
+
+    <string name="fetch_error_generic">Помилка: не вдалось завантажити</string>
+    <string name="fetch_error_auth">Помилка: не правильний API токен</string>
 </resources>

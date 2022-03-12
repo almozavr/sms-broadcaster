@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import ua.sprotyv.smsbroadcaster.feature.fetcher.domain.FetcherRepository
@@ -66,6 +67,7 @@ class MainViewModel(
             }
             .onFailure {
                 reduce { state.copy(fetchStatus = Status.IDLE) }
+                postSideEffect(MainEffect.FetchError(authFail = it.message?.contains("403") == true))
             }
     }
 

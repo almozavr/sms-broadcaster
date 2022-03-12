@@ -14,4 +14,6 @@ data class MainState(
     val sendNumbers: Int,
 ) : Parcelable
 
-sealed class MainEffect
+sealed class MainEffect {
+    data class FetchError(val authFail: Boolean) : MainEffect()
+}
