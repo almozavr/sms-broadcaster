@@ -317,3 +317,6 @@ fabric.properties
 # husky
 node_modules
 package-lock.json
+
+# google
+google-service-key.json

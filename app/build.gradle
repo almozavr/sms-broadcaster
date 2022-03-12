@@ -5,6 +5,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id 'com.google.firebase.firebase-perf'
+    id 'com.google.firebase.appdistribution'
 }
 apply from: "${rootProject.projectDir}/gradle/base-android-config.gradle"
 apply from: "${rootProject.projectDir}/gradle/compose-android-config.gradle"
@@ -36,6 +37,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             FirebasePerformance {
                 instrumentationEnabled false
+            }
+            firebaseAppDistribution {
+                artifactType = "APK"
+                groups = "dev-team qa-team"
+                serviceCredentialsFile = "google-service-key.json"
             }
             manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
         }
