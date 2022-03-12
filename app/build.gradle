@@ -25,7 +25,7 @@ android {
             useSupportLibrary true
         }
 
-        buildConfigField "String", "API_URL", "\"https://api.stub\""
+        buildConfigField "String", "API_URL", "\"https://selin.in.ua/\""
         buildConfigField "boolean", "LOGGER_ENABLED", "true"
     }
 
