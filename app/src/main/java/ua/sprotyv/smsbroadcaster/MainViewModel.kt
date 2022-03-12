@@ -8,6 +8,7 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 import ua.sprotyv.smsbroadcaster.feature.fetcher.domain.FetcherRepository
+import ua.sprotyv.smsbroadcaster.feature.fetcher.domain.entity.Credentials
 import ua.sprotyv.smsbroadcaster.feature.permission.domain.PermissionService
 import ua.sprotyv.smsbroadcaster.feature.sender.domain.SmsRepository
 import ua.sprotyv.smsbroadcaster.shared.entity.Status
@@ -26,6 +27,7 @@ class MainViewModel(
 
     companion object {
         private val initialState = MainState(
+            token = "",
             fetchStatus = Status.IDLE,
             smsBody = "",
             phoneNumbers = emptyList(),
@@ -39,11 +41,19 @@ class MainViewModel(
         savedStateHandle = savedStateHandle,
         settings = Container.Settings(exceptionHandler = exceptionHandler.asCoroutineExceptionHandler())
     ) {
+        loadCachedToken()
         observeSmsSender()
     }
 
+    private fun loadCachedToken() = intent {
+        fetcherRepository.getCredentials()?.also {
+            reduce { state.copy(token = it.token) }
+        }
+    }
+
     fun onFetchClick(token: String) = intent {
-        reduce { initialState.copy(fetchStatus = Status.PROGRESS) }
+        reduce { initialState.copy(fetchStatus = Status.PROGRESS, token = token) }
+        fetcherRepository.saveCredentials(Credentials(token))
         executeWithHandler { fetcherRepository.fetchBroadcast(token) }
             .onSuccess {
                 reduce {

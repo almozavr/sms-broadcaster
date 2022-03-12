@@ -42,6 +42,7 @@ import ua.sprotyv.smsbroadcaster.shared.ui.theme.SmsBroadcasterTheme
 
 @Composable
 fun MainContent(
+    initialToken: String,
     onFetchClick: (token: String) -> Unit,
     fetchStatus: Status,
     smsText: String,
@@ -57,7 +58,7 @@ fun MainContent(
             .padding(horizontal = 16.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        TokenComponent(onFetchClick, fetchStatus, sendStatus)
+        TokenComponent(initialToken, onFetchClick, fetchStatus, sendStatus)
         Spacer(Modifier.height(24.dp))
         if (smsText.isNotEmpty() && smsPhones > 0) {
             BroadcastInfo(smsText)
@@ -70,11 +71,12 @@ fun MainContent(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun TokenComponent(
+    initialToken: String,
     onFetchClick: (token: String) -> Unit,
     fetchStatus: Status,
     sendStatus: Status,
 ) {
-    var token by rememberSaveable { mutableStateOf("") }
+    var token by rememberSaveable(initialToken) { mutableStateOf(initialToken) }
     var tokenError by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -189,6 +191,7 @@ private fun SendComponent(
 private fun FetchProgressPreview() {
     SmsBroadcasterTheme {
         MainContent(
+            initialToken = "",
             onFetchClick = {},
             fetchStatus = Status.PROGRESS,
             smsText = "",
@@ -206,6 +209,7 @@ private fun FetchProgressPreview() {
 private fun ReadyToSendPreview() {
     SmsBroadcasterTheme {
         MainContent(
+            initialToken = "123",
             onFetchClick = {},
             fetchStatus = Status.COMPLETE,
             smsText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
@@ -223,6 +227,7 @@ private fun ReadyToSendPreview() {
 private fun SendProgressPreview() {
     SmsBroadcasterTheme {
         MainContent(
+            initialToken = "123",
             onFetchClick = {},
             fetchStatus = Status.COMPLETE,
             smsText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",

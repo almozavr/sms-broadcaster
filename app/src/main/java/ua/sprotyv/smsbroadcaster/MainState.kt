@@ -6,6 +6,7 @@ import ua.sprotyv.smsbroadcaster.shared.entity.Status
 
 @Parcelize
 data class MainState(
+    val token: String,
     val fetchStatus: Status,
     val smsBody: String,
     val phoneNumbers: List<String>,

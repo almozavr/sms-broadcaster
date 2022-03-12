@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     MainContent(
+                        initialToken = state.token,
                         onFetchClick = viewModel::onFetchClick,
                         fetchStatus = state.fetchStatus,
                         smsText = state.smsBody,

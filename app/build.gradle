@@ -97,6 +97,7 @@ dependencies {
     implementation libs.retrofit.converter.moshi
     implementation libs.moshi.kotlin
     implementation libs.moshi.adapters
+    implementation libs.androidx.datastore
     // endregion
 
     // region Services
