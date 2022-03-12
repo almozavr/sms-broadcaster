@@ -8,6 +8,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import timber.log.Timber
 import ua.sprotyv.smsbroadcaster.BuildConfig
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -28,7 +29,9 @@ val netModule = module {
         } else {
             HttpLoggingInterceptor.Level.NONE
         }
-        HttpLoggingInterceptor().apply {
+        HttpLoggingInterceptor {
+            Timber.i(message = it)
+        }.apply {
             setLevel(level)
         }
     }
