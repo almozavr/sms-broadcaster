@@ -7,6 +7,43 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:291772369447:android:72f8527c9a19596776dc02",
+        "android_client_info": {
+          "package_name": "ua.sprotyv.smsbroadcaster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "291772369447-6oosncfra5rsh0mriqfet1ll67v41iti.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.sprotyv.smsbroadcaster",
+            "certificate_hash": "a538da3d5383c985c6182d610fac3bfcbd7a5be5"
+          }
+        },
+        {
+          "client_id": "291772369447-m67ch0achs0atdoinmljq5mmv30tpamm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYzXHS3QmgFHuw1jSUMU-RnAiBDyvG9io"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "291772369447-m67ch0achs0atdoinmljq5mmv30tpamm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:291772369447:android:2745e6a28a6d27c676dc02",
         "android_client_info": {
           "package_name": "ua.sprotyv.smsbroadcaster.development"

@@ -320,3 +320,6 @@ package-lock.json
 
 # google
 google-service-key.json
+
+#signing
+signing/release.properties

@@ -31,7 +31,7 @@ class App : Application() {
     private fun setupDependencyInjection(): KoinApplication =
         startKoin {
             androidContext(this@App)
-            androidLogger(if (BuildConfig.LOGGER_ENABLED) Level.ERROR else Level.INFO)
+            androidLogger(if (BuildConfig.LOGGER_ENABLED) Level.ERROR else Level.NONE)
             modules(
                 // region main
                 mainModule,

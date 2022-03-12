@@ -28,8 +28,35 @@ android {
 
         buildConfigField "String", "API_URL", "\"https://selin.in.ua/\""
         buildConfigField "boolean", "LOGGER_ENABLED", "true"
+
+        firebaseAppDistribution {
+            artifactType = "APK"
+            serviceCredentialsFile = "google-service-key.json"
+        }
     }
 
+    // Load keystore properties if file exists
+    def keystore_properties = file('../signing/release.properties')
+    if (keystore_properties.exists()) {
+        Properties props = new Properties()
+        props.load(new FileInputStream(keystore_properties))
+        props.each { prop ->
+            project.ext.set(prop.key, prop.value)
+        }
+    }
+    // Read passwords from Gradle properties and if not found, then from environment variables
+    def keystore_file = project.hasProperty('KEYSTORE_FILE') ? KEYSTORE_FILE : System.getenv("KEYSTORE_FILE")
+    def keystore_password = project.hasProperty('KEYSTORE_PASSWORD') ? KEYSTORE_PASSWORD : System.getenv("KEYSTORE_PASSWORD")
+    def key_alias = project.hasProperty('KEY_ALIAS') ? KEY_ALIAS : System.getenv("KEY_ALIAS")
+    def key_password = project.hasProperty('KEY_PASSWORD') ? KEY_PASSWORD : System.getenv("KEY_PASSWORD")
+    signingConfigs {
+        release {
+            storeFile rootProject.file(keystore_file)
+            storePassword keystore_password
+            keyAlias key_alias
+            keyPassword key_password
+        }
+    }
     buildTypes {
         debug {
             applicationIdSuffix ".development"
@@ -39,18 +66,23 @@ android {
                 instrumentationEnabled false
             }
             firebaseAppDistribution {
-                artifactType = "APK"
-                groups = "dev-team qa-team"
-                serviceCredentialsFile = "google-service-key.json"
+                groups = "dev-team, qa-team"
             }
             manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
         }
         release {
+            if (keystore_password && key_alias && key_password) {
+                signingConfig signingConfigs.release
+            } else {
+                logger.error("You need to define KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD to enable release signing.")
+            }
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [crashlyticsCollectionEnabled: "true"]
-
+            firebaseAppDistribution {
+                groups = "dev-team, qa-team, users-team"
+            }
             buildConfigField "boolean", "LOGGER_ENABLED", "false"
+            manifestPlaceholders = [crashlyticsCollectionEnabled: "true"]
         }
     }
     packagingOptions {
