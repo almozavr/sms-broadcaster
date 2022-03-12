@@ -1,5 +1,6 @@
 package ua.sprotyv.smsbroadcaster.feature.sender.data
 
+import android.app.PendingIntent
 import android.content.Context
 import android.telephony.SmsManager
 import androidx.work.CoroutineWorker
@@ -26,7 +27,13 @@ class SendSmsWorker(context: Context, parameters: WorkerParameters) : CoroutineW
         val phones = inputData.getStringArray(ARG_PHONES) ?: return Result.failure()
         phones.forEachIndexed { i, phone ->
             if (isStopped) return@forEachIndexed
-            smsManager.sendTextMessage(phone, null, smsBody, null, null)
+            val sentIntent = PendingIntent.getBroadcast(
+                applicationContext,
+                0,
+                SendSmsResultReceiver.create(phone),
+                PendingIntent.FLAG_IMMUTABLE
+            )
+            smsManager.sendTextMessage(phone, null, smsBody, sentIntent, null)
             setProgress(
                 workDataOf(
                     ARG_SMS to smsBody,
