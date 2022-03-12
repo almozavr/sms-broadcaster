@@ -157,15 +157,19 @@ private fun SendComponent(
                 Status.IDLE -> {
                     Slider(
                         value = sliderPosition,
-                        valueRange = 1f..sendOverall.toFloat(),
-                        steps = sendOverall,
+                        valueRange = 0f..sendOverall.toFloat(),
+                        steps = kotlin.math.max(1, sendOverall - 1),
                         onValueChange = { sliderPosition = it },
                     )
                     Text(stringResource(R.string.send_slider_value, sliderPosition.toInt()))
                     Spacer(Modifier.height(8.dp))
-                    Button(onClick = { onSendClick(sliderPosition.toInt()) }) {
-                        Text(text = stringResource(id = R.string.send_button_label))
-                    }
+                    Button(
+                        onClick = { onSendClick(sliderPosition.toInt()) },
+                        enabled = sliderPosition != 0f,
+                        content = {
+                            Text(text = stringResource(id = R.string.send_button_label))
+                        }
+                    )
                 }
                 Status.PROGRESS, Status.COMPLETE -> {
                     val animatedProgress = animateFloatAsState(
