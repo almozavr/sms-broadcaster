@@ -25,6 +25,7 @@ class WorkManagerSmsRepository(private val workManager: WorkManager) : SmsReposi
     override fun observe(): Flow<SmsSendStatus> =
         workManager.getWorkInfosForUniqueWorkLiveData(WORK_NAME).asFlow()
             .filter {
+                if (it.isEmpty()) return@filter false
                 val work = it.first()
                 work.state != WorkInfo.State.ENQUEUED && work.state != WorkInfo.State.BLOCKED &&
                     (work.progress.keyValueMap.isNotEmpty() || work.outputData.keyValueMap.isNotEmpty())
