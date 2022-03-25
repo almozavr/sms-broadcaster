@@ -19,10 +19,12 @@ class SendSmsWorker(context: Context, parameters: WorkerParameters) : CoroutineW
     private val smsManager: SmsManager by lazy { context.getSystemService(SmsManager::class.java) }
     private val notificationFactory by lazy { SmsNotificationFactory(applicationContext) }
 
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return ForegroundInfo(SmsNotificationFactory.NOTIFICATION_ID, notificationFactory.createNotification())
+    }
+
     override suspend fun doWork(): Result {
-        ForegroundInfo(SmsNotificationFactory.NOTIFICATION_ID, notificationFactory.createNotification()).also {
-            setForeground(it)
-        }
+        setForeground(getForegroundInfo())
         val smsBody = inputData.getString(ARG_SMS) ?: return Result.failure()
         val phones = inputData.getStringArray(ARG_PHONES) ?: return Result.failure()
         phones.forEachIndexed { i, phone ->
