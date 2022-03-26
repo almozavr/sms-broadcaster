@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "291772369447",
-    "project_id": "sprotyv-sms-broadcaster",
-    "storage_bucket": "sprotyv-sms-broadcaster.appspot.com"
+    "project_number": "923057228018",
+    "project_id": "zarmy-rip",
+    "storage_bucket": "zarmy-rip.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:291772369447:android:72f8527c9a19596776dc02",
+        "mobilesdk_app_id": "1:923057228018:android:2ad589e997b7c90364a86b",
         "android_client_info": {
-          "package_name": "ua.sprotyv.smsbroadcaster"
+          "package_name": "rip.zarmy.smsbroadcaster"
         }
       },
       "oauth_client": [
         {
-          "client_id": "291772369447-6oosncfra5rsh0mriqfet1ll67v41iti.apps.googleusercontent.com",
+          "client_id": "923057228018-nohl8mv8bo6p57ocsq00bvl3dj208ni5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "ua.sprotyv.smsbroadcaster",
-            "certificate_hash": "a538da3d5383c985c6182d610fac3bfcbd7a5be5"
+            "package_name": "rip.zarmy.smsbroadcaster",
+            "certificate_hash": "6e42b57157da0a93581e8ac93abe895bf357f1e5"
           }
         },
         {
-          "client_id": "291772369447-m67ch0achs0atdoinmljq5mmv30tpamm.apps.googleusercontent.com",
+          "client_id": "923057228018-glgvju4fjuvqgp1sqcn1kovhdckciejq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAYzXHS3QmgFHuw1jSUMU-RnAiBDyvG9io"
+          "current_key": "AIzaSyCCPp_X_5hn9FeYfnjhIszvRKAc7Ys2q18"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "291772369447-m67ch0achs0atdoinmljq5mmv30tpamm.apps.googleusercontent.com",
+              "client_id": "923057228018-glgvju4fjuvqgp1sqcn1kovhdckciejq.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -44,35 +44,35 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:291772369447:android:2745e6a28a6d27c676dc02",
+        "mobilesdk_app_id": "1:923057228018:android:eaae555d5f63629e64a86b",
         "android_client_info": {
-          "package_name": "ua.sprotyv.smsbroadcaster.development"
+          "package_name": "rip.zarmy.smsbroadcaster.development"
         }
       },
       "oauth_client": [
         {
-          "client_id": "291772369447-91kl8hgraj5uv0vu2935q9ncm72dl5p1.apps.googleusercontent.com",
+          "client_id": "923057228018-sl562dlo79smj8rjekm8ordun8aiiper.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "ua.sprotyv.smsbroadcaster.development",
+            "package_name": "rip.zarmy.smsbroadcaster.development",
             "certificate_hash": "79d88d564d910fe7157ac875e09de43101c7eba2"
           }
         },
         {
-          "client_id": "291772369447-m67ch0achs0atdoinmljq5mmv30tpamm.apps.googleusercontent.com",
+          "client_id": "923057228018-glgvju4fjuvqgp1sqcn1kovhdckciejq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAYzXHS3QmgFHuw1jSUMU-RnAiBDyvG9io"
+          "current_key": "AIzaSyCCPp_X_5hn9FeYfnjhIszvRKAc7Ys2q18"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "291772369447-m67ch0achs0atdoinmljq5mmv30tpamm.apps.googleusercontent.com",
+              "client_id": "923057228018-glgvju4fjuvqgp1sqcn1kovhdckciejq.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
